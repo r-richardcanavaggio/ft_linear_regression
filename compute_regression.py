@@ -26,6 +26,7 @@ def load(path: str) -> pd.DataFrame:
         print(f"Unexpected error while reading file {e}")
         return None
 
+
 def calculate_theta_0(df: pd.DataFrame, learning_rate: int) -> float:
     mileage = df['km'].to_numpy()
     price = df['price'].to_numpy()
@@ -34,13 +35,15 @@ def calculate_theta_0(df: pd.DataFrame, learning_rate: int) -> float:
     resultat = ufunc(mileage).astype(float)
     return learning_rate * np.sum(resultat - price) / len(df.columns)
 
+
 def calculate_theta_1(df: pd.DataFrame, learning_rate: int) -> float:
     mileage = df['km'].to_numpy()
     price = df['price'].to_numpy()
 
     ufunc = np.frompyfunc(estimate_price, 1, 1)
     resultat = ufunc(mileage).astype(float)
-    return learning_rate * np.sum((resultat - price) * mileage) / len(df.columns) 
+    return learning_rate * (np.sum((resultat - price) * mileage) / len(df.columns)) 
+
 
 def main():
     if (len(sys.argv) != 2):
@@ -55,8 +58,6 @@ def main():
     theta_1 = calculate_theta_1(df, learning_rate)
     print(theta_0)
     print(theta_1)
-
-
 
 
 if __name__ == "__main__":
