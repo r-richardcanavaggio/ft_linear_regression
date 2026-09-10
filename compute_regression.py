@@ -8,7 +8,6 @@ def load(path: str) -> pd.DataFrame:
     """Takes the file path and returns the data loaded into a DataFrame"""
     try:
         df = pd.read_csv(path)
-        print(f"Loading dataset of dimensions {df.shape}")
         return df
     except FileNotFoundError:
         print(f"Error: File not found at {path}")
@@ -27,37 +26,36 @@ def load(path: str) -> pd.DataFrame:
         return None
 
 
-def calculate_theta_0(df: pd.DataFrame, learning_rate: int) -> float:
-    mileage = df['km'].to_numpy()
-    price = df['price'].to_numpy()
-
-    ufunc = np.frompyfunc(estimate_price, 1, 1)
-    resultat = ufunc(mileage).astype(float)
-    return learning_rate * np.sum(resultat - price) / len(df.columns)
-
-
-def calculate_theta_1(df: pd.DataFrame, learning_rate: int) -> float:
-    mileage = df['km'].to_numpy()
-    price = df['price'].to_numpy()
-
-    ufunc = np.frompyfunc(estimate_price, 1, 1)
-    resultat = ufunc(mileage).astype(float)
-    return learning_rate * (np.sum((resultat - price) * mileage) / len(df.columns)) 
-
-
 def main():
-    if (len(sys.argv) != 2):
-        return 0
-
     df = load(sys.argv[1])
     if df is None:
         return 1
 
-    learning_rate = 0.01
-    theta_0 = calculate_theta_0(df, learning_rate)
-    theta_1 = calculate_theta_1(df, learning_rate)
-    print(theta_0)
-    print(theta_1)
+    learning_rate = 0.0001
+    theta_0 = 0.0
+    theta_1 = 0.0
+    eps = 1e-12
+
+    mileage = df['km'].to_numpy()
+    mileage = (mileage - mileage.min()) / (mileage.max() - mileage.min())
+    price = df['price'].to_numpy()
+    m = len(df)
+
+    while True:
+        old0 = theta_0
+        old1 = theta_1
+        estimation = estimate_price(mileage, theta_0, theta_1)
+        tmp_0 = learning_rate * np.sum(estimation - price) / m
+        tmp_1 = learning_rate * (np.sum((estimation - price) * mileage) / m)
+        theta_0 = theta_0 - tmp_0
+        theta_1 = theta_1 - tmp_1
+        print(f"Theta 0: {theta_0:.15f} | Theta 1: {theta_1:.15f}", end='\r', flush=True)
+        if abs(old0 - theta_0) < eps and abs(old1 - theta_1) < eps:
+            break
+
+    theta_0 = theta_0 * (mileage.max() - mileage.min()) + mileage.min()
+    theta_1 = theta_1 * (mileage.max() - mileage.min()) + mileage.min()
+    print(f"\nDenormalized\nTheta 0: {theta_0} | Theta 1: {theta_1}")
 
 
 if __name__ == "__main__":
