@@ -48,7 +48,7 @@ def run_regression(mileage: np.ndarray, price: np.ndarray) -> dict:
 
 def load_computed_results(file_path: Path) -> dict | None:
     """Load previously computed model parameters from a JSON file."""
-    print(f"File found: '{file_path}. Loading existing results.")
+    print(f"File found: '{file_path}'. Loading existing results.")
     try:
         with open(file_path, 'r') as fichier:
             return json.load(fichier)
