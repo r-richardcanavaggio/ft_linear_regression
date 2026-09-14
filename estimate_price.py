@@ -1,4 +1,3 @@
-import sys
 import json
 
 
@@ -18,10 +17,14 @@ def main():
         theta_0 = 0.0
         theta_1 = 0.0
 
-    mileage = input("Enter mileage: ")
-    mileage = int(mileage)
+    try:
+        mileage = int(input("Enter mileage: "))
+    except ValueError as error:
+        print(f"Error: {error}")
+        return
+
     estimation = estimate_price(mileage, theta_0, theta_1)
-    print(f"Estimated price for given mileage is: {estimation}")
+    print(f"Estimated price for a car with {mileage} km is: {estimation}")
 
 
 if __name__ == "__main__":

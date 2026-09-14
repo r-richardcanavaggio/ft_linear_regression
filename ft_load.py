@@ -1,23 +1,32 @@
 import pandas as pd
 
 
-def load(path: str) -> pd.DataFrame:
-    """Takes the file path and returns the data loaded into a DataFrame"""
+def load(path: str):
     try:
         df = pd.read_csv(path)
-        return df
     except FileNotFoundError:
-        print(f"Error: File not found at {path}")
+        print(f"Error: File '{path}' not found.")
         return None
     except PermissionError:
-        print(f"Error: Permission denied for {path}")
+        print(f"Error: Permission denied for '{path}'.")
         return None
-    except pd.errors.ParserError:
-        print(f"Error: Data Parsing Error. Data might be corrupted for {path}")
-        return None
-    except UnicodeDecodeError:
-        print(f"Error: Encoding error. File could not be decoded for {path}")
+    except (pd.errors.ParserError, UnicodeDecodeError) as e:
+        print(f"Error: Could not parse or decode '{path}': {e}")
         return None
     except Exception as e:
-        print(f"Unexpected error while reading file {e}")
+        print(f"Unexpected error reading '{path}': {e}")
+        return None
+
+    try:
+        data_array = df.to_numpy().T
+
+        mileage, price = data_array
+
+        return mileage, price
+
+    except ValueError:
+        print(f"Error: Data shape mismatch. Expected 2 columns, found {df.shape[1]}.")
+        return None
+    except Exception as e:
+        print(f"Error processing data: {e}")
         return None
