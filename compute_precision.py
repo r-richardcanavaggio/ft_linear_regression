@@ -4,7 +4,10 @@ import pandas as pd
 import numpy as np
 
 
-def run_precision(values: dict, mileage: np.ndarray, price: np.ndarray) -> float:
+def run_precision(
+    values: dict, mileage: np.ndarray, price: np.ndarray
+) -> float:
+    """Compute the R2 determination coefficient as a percentage."""
     theta_0 = values['theta_0']
     theta_1 = values['theta_1']
 
@@ -18,7 +21,9 @@ def run_precision(values: dict, mileage: np.ndarray, price: np.ndarray) -> float
 
     return r2 * 100
 
+
 def main():
+    """Load data and model parameters, then print precision."""
     mileage, price = pd.read_csv(
         'linear_regression_data.csv'
     ).to_numpy().T
@@ -26,11 +31,10 @@ def main():
     try:
         with open("model.json", "r") as fichier:
             values = json.load(fichier)
-
-    except FileNotFoundError as e:
+    except FileNotFoundError:
         print("Error: Missing 'model.json'")
         return
-        
+
     r2 = run_precision(values, mileage, price)
     print(f"The regression model explains {r2:.2f}% "
           "of the variance in price.")

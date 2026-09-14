@@ -1,11 +1,15 @@
 import json
 
 
-def estimate_price(mileage: int, theta_0: float = 0.0, theta_1: float = 0.0) -> float:
+def estimate_price(
+    mileage: int, theta_0: float = 0.0, theta_1: float = 0.0
+) -> float:
+    """Estimate the price of a car for a given mileage."""
     return theta_0 + (theta_1 * mileage)
 
 
 def main():
+    """Prompt the user for mileage and display the estimated price."""
     try:
         with open("model.json", "r") as fichier:
             parametres = json.load(fichier)
@@ -13,7 +17,8 @@ def main():
         theta_0 = parametres["theta_0"]
         theta_1 = parametres["theta_1"]
     except FileNotFoundError:
-        print("Fichier model.json introuvable, lancement avec valeur par defaut (0,0)")
+        print("Fichier model.json introuvable, "
+              "lancement avec valeur par defaut (0,0)")
         theta_0 = 0.0
         theta_1 = 0.0
 

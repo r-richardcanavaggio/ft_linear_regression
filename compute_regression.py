@@ -1,5 +1,4 @@
 import argparse
-import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import json
@@ -9,6 +8,7 @@ from ft_load import load
 
 
 def run_regression(mileage: np.ndarray, price: np.ndarray) -> dict:
+    """Train linear regression model on mileage and price data."""
     learning_rate = 0.001
     theta_0 = 0.0
     theta_1 = 0.0
@@ -27,9 +27,11 @@ def run_regression(mileage: np.ndarray, price: np.ndarray) -> dict:
         tmp_1 = learning_rate * (np.sum((estimation - price) * norm_mile) / m)
         theta_0 = theta_0 - tmp_0
         theta_1 = theta_1 - tmp_1
-        print(f"Theta 0: {theta_0:.15f} | Theta 1: {theta_1:.15f}",
-                end='\r',
-                flush=True)
+        print(
+            f"Theta 0: {theta_0:.15f} | Theta 1: {theta_1:.15f}",
+            end='\r',
+            flush=True,
+        )
         if abs(old0 - theta_0) < eps and abs(old1 - theta_1) < eps:
             break
 
@@ -45,6 +47,7 @@ def run_regression(mileage: np.ndarray, price: np.ndarray) -> dict:
 
 
 def load_computed_results(file_path: Path) -> dict | None:
+    """Load previously computed model parameters from a JSON file."""
     print(f"File found: '{file_path}. Loading existing results.")
     try:
         with open(file_path, 'r') as fichier:
@@ -55,6 +58,7 @@ def load_computed_results(file_path: Path) -> dict | None:
 
 
 def plot(mileage: np.ndarray, price: np.ndarray, values: dict) -> None:
+    """Plot data points alongside the fitted regression line."""
     print("Plotting...")
 
     theta_0 = values['theta_0']
@@ -67,6 +71,7 @@ def plot(mileage: np.ndarray, price: np.ndarray, values: dict) -> None:
 
 
 def main():
+    """Train or load the linear regression model and optionally plot."""
     parser = argparse.ArgumentParser()
     parser.add_argument("-p", "--plot", action="store_true")
     args = parser.parse_args()
@@ -92,7 +97,7 @@ def main():
         try:
             with open(file_path, 'w') as fichier:
                 json.dump(computed_data, fichier, indent=4)
-            print(f"Successfully saved new results to 'model.json'")
+            print("Successfully saved new results to 'model.json'")
         except IOError as e:
             print(f"Error: Could not write to file {file_path} ({e})")
             return

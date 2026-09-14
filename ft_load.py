@@ -2,6 +2,7 @@ import pandas as pd
 
 
 def load(path: str):
+    """Load dataset from CSV and return mileage and price arrays."""
     try:
         df = pd.read_csv(path)
     except FileNotFoundError:
@@ -25,7 +26,8 @@ def load(path: str):
         return mileage, price
 
     except ValueError:
-        print(f"Error: Data shape mismatch. Expected 2 columns, found {df.shape[1]}.")
+        print("Error: Data shape mismatch. "
+              f"Expected 2 columns, found {df.shape[1]}.")
         return None
     except Exception as e:
         print(f"Error processing data: {e}")
