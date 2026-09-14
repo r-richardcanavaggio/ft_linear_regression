@@ -84,7 +84,7 @@ The system is decoupled into four modular pipelines: **Data Ingestion**, **Itera
 | Module | Architectural Role | Core Technical Responsibilities |
 | :--- | :--- | :--- |
 | [`compute_regression.py`](./compute_regression.py) | Training & Optimization | Vectorized batch gradient descent, dynamic min-max feature scaling, convergence monitoring ($\epsilon = 10^{-10}$), analytical parameter denormalization, JSON serialization, and optional Matplotlib plotting (`-p`). |
-| [`estimate_price.py`](./estimate_price.py) | Inference Service | Standalone prediction utility: validates numeric CLI input, deserializes model weights with fallback tolerance, and computes the hypothesis $h_\theta(x)$ in $O(1)$ time. |
+| [`estimate_price.py`](./estimate_price.py) | Inference Service | Standalone prediction utility: validates numeric CLI input, deserializes model weights with fallback tolerance, and computes the hypothesis $h_\theta(x)$ in `O(1)` time. |
 | [`compute_precision.py`](./compute_precision.py) | Verification & Metrics | Calculates the coefficient of determination ($R^2$) comparing Residual Sum of Squares ($RSS$) against Total Sum of Squares ($TSS$). |
 | [`ft_load.py`](./ft_load.py) | Defensive Data Access Layer | Encapsulates CSV ingestion with targeted exception handling (`FileNotFoundError`, `PermissionError`, `ParserError`, `UnicodeDecodeError`, dimensionality verification). |
 | [`model.json`](./model.json) | State Persistence Artifact | Lightweight JSON key-value store holding the learned bias ($\theta_0$) and slope ($\theta_1$) parameters. |
@@ -115,7 +115,7 @@ $$\max\left(|\theta_0^{(t)} - \theta_0^{(t-1)}|, |\theta_1^{(t)} - \theta_1^{(t-
 This guarantees true asymptotic convergence to the global convex minimum.
 
 ### 2. Feature Scaling & Analytical Closed-Form Denormalization
-* **The Challenge**: The input feature (mileage) spans $22,899 \text{ km} \le x \le 240,000 \text{ km}$ ($O(10^5)$), while prices span $3,650 \le y \le 8,290$ ($O(10^3)$). Operating gradient descent on unscaled features creates severe gradient disparity—the partial derivative with respect to $\theta_1$ is $\approx 10^5$ times larger than with respect to $\theta_0$, leading to divergence, numerical overflow, or requiring an impractically infinitesimal learning rate.
+* **The Challenge**: The input feature (mileage) spans $22,899 \text{ km} \le x \le 240,000 \text{ km}$ (`O(10^5)`), while prices span $3,650 \le y \le 8,290$ (`O(10^3)`). Operating gradient descent on unscaled features creates severe gradient disparity—the partial derivative with respect to $\theta_1$ is $\approx 10^5$ times larger than with respect to $\theta_0$, leading to divergence, numerical overflow, or requiring an impractically infinitesimal learning rate.
 * **The Solution (Min-Max Scaling)**: Inputs are mapped into a balanced unit domain $[0, 1]$:
 
   $$x_{\text{norm}} = \frac{x - x_{\min}}{x_{\max} - x_{\min}}$$
